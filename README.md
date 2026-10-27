@@ -8,6 +8,7 @@ HTML page, and configures the server with the UpCloud firewall.
 - Terraform >= 1.5
 - An UpCloud account with API access enabled
 - An SSH key pair (`ssh-keygen -t rsa`)
+- Copy the public half of the key pair to your cloud server (`ssh-copy-id -i ~/.ssh/id_rsa.pub user@server`)
 
 ## Usage
 
