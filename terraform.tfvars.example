@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and adjust. terraform.tfvars is git-ignored.
+hostname                = "web-01"
+zone                    = "fi-hel1"
+plan                    = "1xCPU-1GB"
+ssh_public_key_path     = "~/.ssh/id_ed25519.pub"
+ssh_allowed_ips         = ["203.0.113.10"] # your public IP: curl -4 ifconfig.me
+enable_upcloud_firewall = true             # set to false on an UpCloud trial account
+site_title              = "Hello from UpCloud"

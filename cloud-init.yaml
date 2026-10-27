@@ -1,0 +1,61 @@
+#cloud-config
+hostname: ${hostname}
+
+package_update: true
+package_upgrade: true
+packages:
+  - nginx
+  - ufw
+  - unattended-upgrades
+
+write_files:
+  # Key-only SSH: no passwords, root may log in with keys only.
+  - path: /etc/ssh/sshd_config.d/99-hardening.conf
+    permissions: "0644"
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin prohibit-password
+  # Don't advertise the nginx version.
+  - path: /etc/nginx/conf.d/security.conf
+    permissions: "0644"
+    defer: true
+    content: |
+      server_tokens off;
+  - path: /var/www/html/index.html
+    permissions: "0644"
+    defer: true
+    content: |
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>${site_title}</title>
+        <style>
+          body { font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; background: #f4f6fb; color: #1f2937; }
+          main { text-align: center; padding: 2rem; }
+          code { background: #e5e7eb; padding: 0.15rem 0.4rem; border-radius: 4px; }
+        </style>
+      </head>
+      <body>
+        <main>
+          <h1>${site_title}</h1>
+          <p>Served by Nginx on <code>${hostname}</code>, provisioned with Terraform and cloud-init.</p>
+        </main>
+      </body>
+      </html>
+
+runcmd:
+  # Host firewall: same policy as the UpCloud firewall, and the only one on trial accounts.
+  - ufw default deny incoming
+  - ufw default allow outgoing
+%{ for ip in ssh_allowed_ips ~}
+  - ufw allow from ${ip} to any port 22 proto tcp
+%{ endfor ~}
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  - systemctl restart ssh
+  - systemctl enable --now nginx
+  - systemctl reload nginx

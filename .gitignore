@@ -1,0 +1,25 @@
+# Terraform working directory and state (state can contain secrets)
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+tfplan
+
+# Variable files may contain personal values; keep only the example
+*.tfvars
+*.tfvars.json
+!terraform.tfvars.example
+
+# CLI overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Local secrets
+.env
+*.pem
